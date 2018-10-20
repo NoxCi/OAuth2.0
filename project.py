@@ -7,7 +7,7 @@ from database_setup import Base, Restaurant, MenuItem
 
 
 #Connect to Database and create database session
-engine = create_engine('sqlite:///restaurantmenu.db')
+engine = create_engine('sqlite:///restaurantmenu.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -84,7 +84,7 @@ def showMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
     return render_template('menu.html', items = items, restaurant = restaurant)
-     
+
 
 
 #Create a new menu item
@@ -116,7 +116,7 @@ def editMenuItem(restaurant_id, menu_id):
         if request.form['course']:
             editedItem.course = request.form['course']
         session.add(editedItem)
-        session.commit() 
+        session.commit()
         flash('Menu Item Successfully Edited')
         return redirect(url_for('showMenu', restaurant_id = restaurant_id))
     else:
@@ -126,15 +126,14 @@ def editMenuItem(restaurant_id, menu_id):
 #Delete a menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete', methods = ['GET','POST'])
 def deleteMenuItem(restaurant_id,menu_id):
-    restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
-    itemToDelete = session.query(MenuItem).filter_by(id = menu_id).one() 
+    itemToDelete = session.query(MenuItem).filter_by(id = menu_id).one()
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
         flash('Menu Item Successfully Deleted')
         return redirect(url_for('showMenu', restaurant_id = restaurant_id))
     else:
-        return render_template('deleteMenuItem.html', item = itemToDelete)
+        return render_template('deletemenuitem.html', restaurant_id = restaurant_id, item = itemToDelete)
 
 
 
