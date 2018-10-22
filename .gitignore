@@ -1,4 +1,4 @@
 .vagrant
 database_setup.pyc
-restaurantmenu.db
+restaurants.db
 client_secrets.json
